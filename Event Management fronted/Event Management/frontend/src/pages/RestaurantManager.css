@@ -1,0 +1,174 @@
+.restaurant-manager {
+  min-height: calc(100vh - 72px);
+  padding: 38px 6% 70px;
+  background: #f5f6fb;
+  color: #25253a;
+}
+
+.restaurant-manager-header {
+  margin-bottom: 28px;
+  text-align: center;
+}
+
+.restaurant-manager-header > span {
+  color: #5146d8;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.restaurant-manager-header h1 {
+  margin: 8px 0;
+  font-size: 34px;
+}
+
+.restaurant-manager-header p,
+.restaurant-section-settings > p,
+.restaurant-hours-note {
+  color: #77738b;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.restaurant-manager-card {
+  max-width: 860px;
+  margin: auto;
+  padding: 26px;
+  border: 1px solid #e6e6ee;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 6px 22px rgba(25, 25, 60, 0.06);
+}
+
+.restaurant-manager-card > label,
+.restaurant-settings-form > label {
+  display: block;
+  margin: 12px 0 7px;
+  color: #3c3c50;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.restaurant-manager-card select,
+.restaurant-settings-form textarea,
+.restaurant-settings-form input,
+.restaurant-table-section input {
+  width: 100%;
+  min-height: 42px;
+  padding: 9px 11px;
+  border: 1px solid #dcdce8;
+  border-radius: 7px;
+  background: #fff;
+  color: #25253a;
+  font: inherit;
+}
+
+.restaurant-settings-form {
+  margin-top: 24px;
+}
+
+.restaurant-settings-form h2,
+.restaurant-section-settings h2 {
+  margin-bottom: 12px;
+  font-size: 20px;
+}
+
+.restaurant-settings-form textarea {
+  resize: vertical;
+}
+
+.restaurant-hours-row {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-top: 12px;
+}
+
+.restaurant-hours-row label {
+  display: grid;
+  gap: 7px;
+  color: #3c3c50;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.restaurant-hours-note {
+  margin-top: 9px;
+}
+
+.restaurant-settings-form > button,
+.restaurant-table-section button {
+  padding: 10px 14px;
+  border: 0;
+  border-radius: 7px;
+  background: #5146d8;
+  color: #fff;
+  cursor: pointer;
+  font-weight: 600;
+}
+
+.restaurant-settings-form > button {
+  width: 100%;
+  margin-top: 16px;
+}
+
+.restaurant-settings-form button:disabled,
+.restaurant-table-section button:disabled {
+  opacity: 0.6;
+  cursor: wait;
+}
+
+.restaurant-section-settings {
+  margin-top: 30px;
+  padding-top: 22px;
+  border-top: 1px solid #e9e9ef;
+}
+
+.restaurant-section-settings > p {
+  margin-bottom: 14px;
+}
+
+.restaurant-table-section {
+  display: grid;
+  grid-template-columns: 100px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+.restaurant-manager-error,
+.restaurant-manager-message {
+  margin-top: 14px;
+  font-size: 14px;
+}
+
+.restaurant-manager-error {
+  color: #b42318;
+}
+
+.restaurant-manager-message {
+  color: #17804a;
+}
+
+@media (max-width: 560px) {
+  .restaurant-manager {
+    padding: 28px 16px 50px;
+  }
+
+  .restaurant-manager-card {
+    padding: 18px;
+  }
+
+  .restaurant-hours-row {
+    grid-template-columns: 1fr;
+  }
+
+  .restaurant-table-section {
+    grid-template-columns: 1fr auto;
+  }
+
+  .restaurant-table-section input {
+    grid-column: 1 / -1;
+    grid-row: 2;
+  }
+}

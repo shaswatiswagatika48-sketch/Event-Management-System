@@ -1,0 +1,126 @@
+.rating-page {
+  min-height: calc(100vh - 72px);
+  display: grid;
+  place-items: center;
+  padding: 32px 20px;
+  background: #f5f6fb;
+  color: #25253a;
+}
+
+.rating-card {
+  width: 100%;
+  max-width: 520px;
+  padding: 36px;
+  border: 1px solid #e6e6ee;
+  border-radius: 16px;
+  background: #fff;
+  box-shadow: 0 6px 22px rgba(25, 25, 60, 0.06);
+}
+
+.rating-eyebrow {
+  color: #5146d8;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 2px;
+}
+
+.rating-card h1 {
+  margin: 12px 0;
+  font-size: 28px;
+}
+
+.rating-card > p {
+  color: #6d6d7d;
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.rating-card > .rating-email-status {
+  margin-top: 12px;
+  color: #5146d8;
+}
+
+.rating-stars {
+  margin: 24px 0;
+  padding: 0;
+  border: 0;
+}
+
+.rating-stars legend,
+.rating-card form > label {
+  margin-bottom: 8px;
+  color: #3c3c50;
+  font-size: 14px;
+  font-weight: 600;
+}
+
+.rating-stars button {
+  padding: 0 5px;
+  border: 0;
+  background: transparent;
+  color: #c9c9d4;
+  cursor: pointer;
+  font-size: 38px;
+}
+
+.rating-stars button.selected {
+  color: #f5ae28;
+}
+
+.rating-stars button:focus-visible {
+  outline: 2px solid #5146d8;
+  outline-offset: 2px;
+}
+
+.rating-card form > label {
+  display: block;
+}
+
+.rating-card form > label span {
+  color: #77738b;
+  font-weight: 400;
+}
+
+.rating-card textarea {
+  width: 100%;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid #dcdce8;
+  border-radius: 8px;
+  color: #25253a;
+  font: inherit;
+}
+
+.rating-submit {
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 20px;
+  padding: 13px 18px;
+  border: 0;
+  border-radius: 8px;
+  background: #5146d8;
+  color: #fff;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+}
+
+.rating-submit:disabled {
+  background: #aaa5e9;
+  cursor: not-allowed;
+}
+
+.rating-error {
+  margin-top: 12px;
+  color: #b42318;
+  font-size: 14px;
+}
+
+@media (max-width: 480px) {
+  .rating-card {
+    padding: 26px 20px;
+  }
+}

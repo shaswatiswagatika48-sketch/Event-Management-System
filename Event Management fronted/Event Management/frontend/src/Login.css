@@ -1,0 +1,439 @@
+/* =========================
+   EVENTHUB LOGIN PAGE
+   ========================= */
+
+.auth-page {
+  min-height: 100vh;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 30px;
+  box-sizing: border-box;
+  background: linear-gradient(135deg, #f6f4ff, #ffffff);
+}
+
+/* =========================
+   MAIN LOGIN CARD
+   ========================= */
+
+.auth-card {
+  width: 100%;
+  max-width: 950px;
+  min-height: 560px;
+  display: flex;
+  overflow: hidden;
+  background: #ffffff;
+  border-radius: 24px;
+  box-shadow: 0 20px 60px rgba(81, 70, 216, 0.15);
+}
+
+/* =========================
+   LEFT SIDE
+   ========================= */
+
+.auth-side {
+  width: 45%;
+  position: relative;
+  overflow: hidden;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+
+  padding: 50px;
+  box-sizing: border-box;
+
+  background: linear-gradient(
+    145deg,
+    #5146d8,
+    #7168e8,
+    #938cf5
+  );
+
+  color: white;
+  text-align: center;
+}
+
+/* Decorative circle */
+
+.auth-side::before {
+  content: "";
+  position: absolute;
+
+  width: 320px;
+  height: 320px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.12);
+
+  top: -100px;
+  left: -100px;
+}
+
+/* Second decorative circle */
+
+.auth-side::after {
+  content: "";
+  position: absolute;
+
+  width: 250px;
+  height: 250px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.08);
+
+  bottom: -100px;
+  right: -80px;
+}
+
+/* Small icon */
+
+.calendar-icon {
+  position: absolute;
+  top: 30px;
+  left: 30px;
+
+  font-size: 28px;
+  color: white;
+
+  z-index: 2;
+}
+
+/* Ticket illustration */
+
+.auth-art {
+  position: relative;
+  z-index: 2;
+
+  width: 170px;
+  height: 170px;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin-bottom: 25px;
+
+  border-radius: 50%;
+
+  background: rgba(255, 255, 255, 0.18);
+
+  font-size: 90px;
+
+  animation: floatTicket 3s ease-in-out infinite;
+}
+
+/* Floating animation */
+
+@keyframes floatTicket {
+  0% {
+    transform: translateY(0);
+  }
+
+  50% {
+    transform: translateY(-10px);
+  }
+
+  100% {
+    transform: translateY(0);
+  }
+}
+
+/* Left heading */
+
+.auth-side h2 {
+  position: relative;
+  z-index: 2;
+
+  margin: 0 0 12px;
+
+  font-size: 28px;
+  font-weight: 700;
+}
+
+/* Left paragraph */
+
+.auth-side p {
+  position: relative;
+  z-index: 2;
+
+  max-width: 320px;
+
+  margin: 0;
+
+  line-height: 1.6;
+
+  font-size: 14px;
+
+  color: rgba(255, 255, 255, 0.9);
+}
+
+/* =========================
+   RIGHT SIDE
+   ========================= */
+
+.auth-form {
+  width: 55%;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+
+  padding: 60px 70px;
+
+  box-sizing: border-box;
+}
+
+/* Main heading */
+
+.auth-form h1 {
+  margin: 0 0 8px;
+
+  color: #171717;
+
+  font-size: 30px;
+  font-weight: 700;
+}
+
+/* Subtitle */
+
+.subtitle {
+  margin: 0 0 30px;
+
+  color: #777;
+
+  font-size: 14px;
+}
+
+/* =========================
+   ERROR MESSAGE
+   ========================= */
+
+.error {
+  width: 100%;
+  max-width: 390px;
+
+  box-sizing: border-box;
+
+  padding: 11px 14px;
+
+  margin-bottom: 20px;
+
+  border-radius: 8px;
+
+  background: #fff0f0;
+
+  border: 1px solid #ffd0d0;
+
+  color: #d93025;
+
+  font-size: 13px;
+}
+
+/* =========================
+   FORM
+   ========================= */
+
+.auth-form form {
+  width: 100%;
+  max-width: 390px;
+}
+
+/* Labels */
+
+.auth-form label {
+  display: block;
+
+  margin-bottom: 18px;
+
+  color: #333;
+
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* Inputs */
+
+.auth-form input {
+  display: block;
+
+  width: 100%;
+  height: 45px;
+
+  box-sizing: border-box;
+
+  margin-top: 8px;
+
+  padding: 0 14px;
+
+  border: 1px solid #dddddd;
+  border-radius: 8px;
+
+  background: #ffffff;
+
+  color: #222;
+
+  font-size: 13px;
+
+  outline: none;
+
+  transition: 0.2s ease;
+}
+
+/* Input focus */
+
+.auth-form input:focus {
+  border-color: #5146d8;
+
+  box-shadow: 0 0 0 3px rgba(81, 70, 216, 0.1);
+}
+
+.password-input-wrap {
+  position: relative;
+}
+
+.auth-form .password-input-wrap input {
+  padding-right: 48px;
+}
+
+.password-visibility-btn {
+  position: absolute;
+  top: 50%;
+  right: 10px;
+  display: grid;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  place-items: center;
+  transform: translateY(-50%);
+  border: 0;
+  border-radius: 6px;
+  background: transparent;
+  color: #666;
+  cursor: pointer;
+}
+
+.password-visibility-btn:hover {
+  background: #f2f0ff;
+  color: #5146d8;
+}
+
+.password-visibility-btn:focus-visible {
+  outline: 2px solid #5146d8;
+  outline-offset: 2px;
+}
+
+.password-visibility-btn svg {
+  width: 20px;
+  height: 20px;
+  fill: none;
+  stroke: currentColor;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+  stroke-width: 1.8;
+}
+
+/* =========================
+   LOGIN BUTTON
+   ========================= */
+
+.primary-btn {
+  border: none;
+
+  background: #5146d8;
+
+  color: white;
+
+  cursor: pointer;
+
+  font-weight: 600;
+
+  transition: 0.2s ease;
+}
+
+.primary-btn:hover {
+  background: #4036bd;
+
+  transform: translateY(-1px);
+}
+
+.primary-btn:disabled {
+  opacity: 0.7;
+
+  cursor: not-allowed;
+
+  transform: none;
+}
+
+.primary-btn.full {
+  width: 100%;
+  height: 46px;
+
+  margin-top: 5px;
+
+  border-radius: 8px;
+
+  font-size: 14px;
+}
+
+/* =========================
+   SIGN UP LINK
+   ========================= */
+
+.auth-link {
+  width: 100%;
+  max-width: 390px;
+
+  margin: 25px 0 0;
+
+  text-align: center;
+
+  color: #666;
+
+  font-size: 13px;
+}
+
+.auth-link a {
+  color: #5146d8;
+
+  font-weight: 600;
+
+  text-decoration: none;
+}
+
+.auth-link a:hover {
+  text-decoration: underline;
+}
+
+/* =========================
+   MOBILE
+   ========================= */
+
+@media (max-width: 768px) {
+  .auth-card {
+    flex-direction: column;
+    min-height: auto;
+  }
+
+  .auth-side,
+  .auth-form {
+    width: 100%;
+  }
+
+  .auth-side {
+    padding: 40px 25px 30px;
+  }
+
+  .auth-form {
+    padding: 30px 25px 40px;
+  }
+
+  .auth-form form,
+  .auth-link,
+  .error {
+    max-width: 100%;
+  }
+}

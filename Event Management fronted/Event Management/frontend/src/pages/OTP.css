@@ -1,0 +1,479 @@
+/* ==============================
+   EVENTHUB CUSTOMER DETAILS
+============================== */
+
+.details-page {
+  min-height: 100vh;
+  padding: 45px 24px 70px;
+  background: #f6f5ff;
+  color: #25233b;
+  font-family: Arial, Helvetica, sans-serif;
+}
+
+.details-page * {
+  box-sizing: border-box;
+}
+
+/* Heading */
+
+.details-heading {
+  max-width: 900px;
+  margin: 0 auto 40px;
+  text-align: center;
+}
+
+.details-heading span {
+  display: inline-block;
+  margin-bottom: 10px;
+  color: #5546e8;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 4px;
+}
+
+.details-heading h1 {
+  margin: 0 0 12px;
+  color: #24233b;
+  font-size: 44px;
+  font-weight: 800;
+}
+
+.details-heading p {
+  margin: 0;
+  color: #77758b;
+  font-size: 17px;
+}
+
+/* Main layout */
+
+.details-container {
+  width: 100%;
+  max-width: 1120px;
+  margin: auto;
+
+  display: grid;
+  grid-template-columns: 1.05fr 0.95fr;
+  gap: 30px;
+
+  align-items: start;
+}
+
+/* Cards */
+
+.customer-card,
+.final-summary-card {
+  background: #fff;
+  border: 1px solid #eceaf5;
+  border-radius: 24px;
+  padding: 34px;
+
+  box-shadow: 0 12px 40px rgba(47, 39, 100, 0.07);
+}
+
+.customer-card h2,
+.final-summary-card h2 {
+  margin: 0 0 25px;
+  color: #282640;
+  font-size: 23px;
+}
+
+/* Form */
+
+.form-group {
+  margin-bottom: 20px;
+}
+
+.form-group label {
+  display: block;
+  margin-bottom: 9px;
+
+  color: #38354e;
+  font-size: 14px;
+  font-weight: 700;
+}
+
+.form-group input,
+.form-group textarea {
+  width: 100%;
+
+  padding: 14px 15px;
+
+  border: 1.5px solid #dedbed;
+  border-radius: 12px;
+
+  background: #fff;
+
+  color: #292640;
+
+  font-family: inherit;
+  font-size: 15px;
+
+  outline: none;
+
+  transition: 0.2s;
+}
+
+.form-group input {
+  height: 51px;
+}
+
+.form-group textarea {
+  resize: vertical;
+  min-height: 105px;
+}
+
+.form-group input:focus,
+.form-group textarea:focus {
+  border-color: #5546e8;
+
+  box-shadow:
+    0 0 0 4px rgba(85, 70, 232, 0.1);
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+  color: #aaa7b7;
+}
+
+.form-error {
+  display: block;
+  margin-top: 6px;
+  color: #d93636;
+  font-size: 12px;
+}
+
+/* Payment */
+
+.payment-title {
+  margin-top: 30px !important;
+  margin-bottom: 17px !important;
+}
+
+.payment-options {
+  display: flex;
+  flex-direction: column;
+  gap: 11px;
+}
+
+.payment-option {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+
+  padding: 15px;
+
+  border: 1.5px solid #e4e1ef;
+  border-radius: 14px;
+
+  background: #fff;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.payment-option:hover {
+  border-color: #a9a2ed;
+}
+
+.payment-option.active {
+  border-color: #5546e8;
+  background: #f5f3ff;
+}
+
+.payment-option input {
+  width: 17px;
+  height: 17px;
+  accent-color: #5546e8;
+}
+
+.payment-icon {
+  font-size: 24px;
+}
+
+.payment-option div {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.payment-option strong {
+  color: #2c2943;
+  font-size: 15px;
+}
+
+.payment-option small {
+  color: #858196;
+  font-size: 12px;
+}
+
+/* Confirm button */
+
+.confirm-details-btn {
+  width: 100%;
+
+  margin-top: 27px;
+  padding: 16px;
+
+  border: none;
+  border-radius: 13px;
+
+  background: linear-gradient(
+    135deg,
+    #6251f0,
+    #4938d6
+  );
+
+  color: #fff;
+
+  font-size: 16px;
+  font-weight: 800;
+
+  cursor: pointer;
+
+  transition: 0.2s;
+}
+
+.confirm-details-btn:hover {
+  transform: translateY(-2px);
+
+  box-shadow:
+    0 9px 22px rgba(85, 70, 232, 0.25);
+}
+
+/* ==============================
+   SUMMARY
+============================== */
+
+.final-summary-card {
+  position: sticky;
+  top: 25px;
+}
+
+.summary-event {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+
+  margin-bottom: 25px;
+  padding-bottom: 23px;
+
+  border-bottom: 1px solid #eeeeF3;
+}
+
+.summary-event-emoji {
+  width: 65px;
+  height: 65px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  border-radius: 16px;
+
+  background: #eeebff;
+
+  font-size: 32px;
+}
+
+.summary-event h3 {
+  margin: 0 0 8px;
+
+  color: #282640;
+  font-size: 19px;
+}
+
+.summary-event p {
+  margin: 5px 0;
+
+  color: #77758b;
+  font-size: 13px;
+}
+
+.final-summary-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+
+  padding: 16px 0;
+
+  border-bottom: 1px solid #eeeeF3;
+}
+
+.final-summary-row span {
+  color: #77758b;
+  font-size: 14px;
+}
+
+.final-summary-row strong {
+  color: #282640;
+  font-size: 14px;
+  text-align: right;
+}
+
+/* Total */
+
+.final-total {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  margin-top: 22px;
+  padding: 5px 0 22px;
+}
+
+.final-total span {
+  color: #282640;
+  font-size: 20px;
+}
+
+.final-total strong {
+  color: #5546e8;
+  font-size: 25px;
+}
+
+/* Payment summary */
+
+.payment-summary {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+
+  padding: 20px;
+
+  border-radius: 17px;
+
+  background: #f4f2ff;
+}
+
+.payment-summary div {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
+}
+
+.payment-summary span {
+  color: #77738c;
+  font-size: 14px;
+}
+
+.payment-summary strong {
+  color: #302e48;
+  font-size: 15px;
+}
+
+/* Security */
+
+.secure-note {
+  margin-top: 18px;
+
+  color: #8a8799;
+
+  font-size: 12px;
+
+  text-align: center;
+}
+
+/* Error */
+
+.details-error-card {
+  width: 100%;
+  max-width: 500px;
+
+  margin: 100px auto;
+
+  padding: 40px;
+
+  background: #fff;
+
+  border-radius: 22px;
+
+  text-align: center;
+
+  box-shadow: 0 12px 40px rgba(47, 39, 100, 0.08);
+}
+
+.error-icon {
+  font-size: 45px;
+}
+
+.details-error-card h2 {
+  margin: 15px 0 10px;
+}
+
+.details-error-card p {
+  color: #77758b;
+}
+
+.go-events-btn {
+  margin-top: 20px;
+
+  padding: 13px 25px;
+
+  border: none;
+  border-radius: 10px;
+
+  background: #5546e8;
+  color: white;
+
+  font-weight: 700;
+
+  cursor: pointer;
+}
+
+/* ==============================
+   TABLET
+============================== */
+
+@media (max-width: 900px) {
+
+  .details-container {
+    grid-template-columns: 1fr;
+    max-width: 650px;
+  }
+
+  .final-summary-card {
+    position: static;
+  }
+}
+
+/* ==============================
+   MOBILE
+============================== */
+
+@media (max-width: 480px) {
+
+  .details-page {
+    padding: 30px 14px 50px;
+  }
+
+  .details-heading h1 {
+    font-size: 31px;
+  }
+
+  .details-heading p {
+    font-size: 14px;
+  }
+
+  .customer-card,
+  .final-summary-card {
+    padding: 22px 17px;
+    border-radius: 19px;
+  }
+
+  .summary-event-emoji {
+    width: 55px;
+    height: 55px;
+    font-size: 27px;
+  }
+
+  .final-total span {
+    font-size: 17px;
+  }
+
+  .final-total strong {
+    font-size: 22px;
+  }
+}
