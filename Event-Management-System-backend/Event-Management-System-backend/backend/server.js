@@ -1,3 +1,5 @@
+dns.setServers(["8.8.8.8", "8.8.4.4"]);
+
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
