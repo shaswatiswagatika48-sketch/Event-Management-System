@@ -108,6 +108,7 @@ function AppContent() {
 
     setIsLoggedIn(false);
     setIsAdmin(false);
+    navigate("/login", { replace: true });
   };
 
   const isLoginPage = location.pathname === "/login";
