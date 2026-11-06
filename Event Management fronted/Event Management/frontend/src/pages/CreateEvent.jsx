@@ -703,6 +703,40 @@ export default function CreateEvent() {
                           </p>
                         )}
                       </div>
+                      {(reservationScope === "restaurant" || reservationSection) && (
+                        <div
+                          className="create-event-slot-status"
+                          aria-label={
+                            reservationScope === "restaurant"
+                              ? "Whole restaurant slot availability"
+                              : `${reservationSection} slot availability`
+                          }
+                        >
+                          <h3>
+                            Availability —{" "}
+                            {reservationScope === "restaurant"
+                              ? "Whole restaurant"
+                              : reservationSection}
+                          </h3>
+                          <div className="create-event-slot-status-grid">
+                            {restaurantTimeSlots.map((slot) => {
+                              const available = isSlotAvailable(slot);
+                              const endHour = Number(slot.time.slice(0, 2)) + 1;
+                              return (
+                                <div
+                                  key={slot.time}
+                                  className={`create-event-slot-status-item ${available ? "available" : "unavailable"}`}
+                                >
+                                  <span>
+                                    {slot.time}–{String(endHour).padStart(2, "0")}:00
+                                  </span>
+                                  <strong>{available ? "Available" : "Unavailable"}</strong>
+                                </div>
+                              );
+                            })}
+                          </div>
+                        </div>
+                      )}
 
                       <>
                           {reservationTime && reservationEndTime && reservationAvailable && (

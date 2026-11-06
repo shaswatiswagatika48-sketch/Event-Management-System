@@ -229,6 +229,45 @@
   color: #b42318;
 }
 
+.create-event-slot-status {
+  display: grid;
+  gap: 10px;
+}
+
+.create-event-slot-status h3 {
+  margin: 0;
+  color: #29245f;
+  font-size: 15px;
+}
+
+.create-event-slot-status-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(145px, 1fr));
+  gap: 8px;
+}
+
+.create-event-slot-status-item {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 9px 10px;
+  border: 1px solid;
+  border-radius: 7px;
+  font-size: 12px;
+}
+
+.create-event-slot-status-item.available {
+  border-color: #cfe8d6;
+  background: #f0fbf3;
+  color: #16803d;
+}
+
+.create-event-slot-status-item.unavailable {
+  border-color: #f0d1ce;
+  background: #fff5f4;
+  color: #b42318;
+}
+
 .create-event-capacity {
   display: grid;
   gap: 4px;

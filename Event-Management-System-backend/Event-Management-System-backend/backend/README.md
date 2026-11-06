@@ -26,6 +26,21 @@ npm start
 Server:
 `http://localhost:5000`
 
+## Add sample restaurants and events
+
+After confirming `.env` points to the Atlas database you want to use and creating
+at least one EventHub account, run this from the backend folder:
+
+```bash
+npm run seed:demo
+```
+
+The repeatable command creates sample restaurants, tables, food, beverages, and
+three future events using the first existing user as their creator. Sample
+records are prefixed with `EventHub Sample:`; Tech Fest events are not created.
+It does not delete or overwrite existing events. Do not run it against a
+production database unless you want these sample records there.
+
 ## Email OTP
 
 Copy `.env.example` to `.env` and add a Gmail App Password.
