@@ -57,6 +57,7 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [busyAction, setBusyAction] = useState("");
   const [eventDraft, setEventDraft] = useState(null);
+  const [bookingEditDraft, setBookingEditDraft] = useState(null);
   const [bookingDraft, setBookingDraft] = useState(null);
   const [bookingResources, setBookingResources] = useState(null);
   const [loadingBookingResources, setLoadingBookingResources] = useState(false);
@@ -453,6 +454,35 @@ export default function AdminDashboard() {
     }
   };
 
+  const saveBookingEdit = async (event) => {
+    event.preventDefault();
+    if (!bookingEditDraft) return;
+
+    setBusyAction(bookingEditDraft._id);
+    setError("");
+    setNotice("");
+    try {
+      const { data } = await api.put(
+        `/bookings/admin/${bookingEditDraft._id}`,
+        {
+          userId: bookingEditDraft.userId,
+          phone: bookingEditDraft.phone,
+        }
+      );
+      setBookingEditDraft(null);
+      setNotice(data.message || "Booking contact details updated.");
+      await loadDashboard();
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+          requestError.response?.data?.error ||
+          "Could not update booking."
+      );
+    } finally {
+      setBusyAction("");
+    }
+  };
+
   const filteredEvents = searchRows(dashboard?.events || [], search);
   const filteredRegistrations = searchRows(dashboard?.registrations || [], search);
   const filteredBookings = searchRows(dashboard?.bookings || [], search);
@@ -689,7 +719,7 @@ export default function AdminDashboard() {
             </div>
             <div className="admin-table-wrap">
               <table className="admin-table">
-                <thead><tr><th>Customer</th><th>Event / Restaurant</th><th>Total</th><th>Paid</th><th>Remaining</th><th>Booking status</th><th>Payment status</th></tr></thead>
+                <thead><tr><th>Customer</th><th>Event / Restaurant</th><th>Total</th><th>Paid</th><th>Remaining</th><th>Booking status</th><th>Payment status</th><th>Action</th></tr></thead>
                 <tbody>
                   {filteredBookings.map((booking) => (
                     <tr key={booking._id}>
@@ -700,9 +730,24 @@ export default function AdminDashboard() {
                       <td>{formatAmount(booking.balanceAmount)}</td>
                       <td><span className={`admin-status status-${booking.bookingStatus}`}>{booking.bookingStatus}</span></td>
                       <td><span className={`admin-status status-${booking.paymentStatus}`}>{booking.paymentStatus}</span></td>
+                      <td>
+                        <button
+                          type="button"
+                          className="admin-text-btn"
+                          onClick={() =>
+                            setBookingEditDraft({
+                              _id: booking._id,
+                              userId: booking.user?._id || "",
+                              phone: booking.phone || "",
+                            })
+                          }
+                        >
+                          Edit
+                        </button>
+                      </td>
                     </tr>
                   ))}
-                  {filteredBookings.length === 0 && <tr><td colSpan="7">No matching bookings.</td></tr>}
+                  {filteredBookings.length === 0 && <tr><td colSpan="8">No matching bookings.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -1019,6 +1064,87 @@ export default function AdminDashboard() {
                     <p className="admin-form-full" role="status">
                       Loading restaurant availability...
                     </p>
+                  )}
+
+                  {bookingEditDraft && (
+                    <div className="admin-modal-backdrop" role="presentation">
+                      <form className="admin-modal" onSubmit={saveBookingEdit}>
+                        <div className="admin-modal-heading">
+                          <div>
+                            <span className="admin-eyebrow">BOOKING MANAGEMENT</span>
+                            <h2>Edit booking contact</h2>
+                          </div>
+                          <button
+                            type="button"
+                            className="admin-modal-close"
+                            onClick={() => setBookingEditDraft(null)}
+                            aria-label="Close"
+                          >
+                            ×
+                          </button>
+                        </div>
+                        <p className="admin-dashboard-note">
+                          Customer and phone can be updated. Reservation details and all
+                          payment records remain unchanged.
+                        </p>
+                        <div className="admin-form-grid">
+                          <label>
+                            Customer
+                            <select
+                              required
+                              value={bookingEditDraft.userId}
+                              onChange={(event) =>
+                                setBookingEditDraft((current) => ({
+                                  ...current,
+                                  userId: event.target.value,
+                                }))
+                              }
+                            >
+                              <option value="">Select a customer</option>
+                              {dashboard.users
+                                .filter((user) => user.role === "user")
+                                .map((user) => (
+                                  <option key={user._id} value={user._id}>
+                                    {user.name} — {user.email}
+                                  </option>
+                                ))}
+                            </select>
+                          </label>
+                          <label>
+                            Customer phone
+                            <input
+                              required
+                              minLength="5"
+                              maxLength="40"
+                              value={bookingEditDraft.phone}
+                              onChange={(event) =>
+                                setBookingEditDraft((current) => ({
+                                  ...current,
+                                  phone: event.target.value,
+                                }))
+                              }
+                            />
+                          </label>
+                        </div>
+                        <div className="admin-modal-actions">
+                          <button
+                            type="button"
+                            className="admin-secondary-btn"
+                            onClick={() => setBookingEditDraft(null)}
+                          >
+                            Cancel
+                          </button>
+                          <button
+                            className="admin-primary-btn"
+                            disabled={busyAction === bookingEditDraft._id}
+                          >
+                            {busyAction === bookingEditDraft._id
+                              ? "Saving..."
+                              : "Save changes"}
+                          </button>
+                        </div>
+                      </form>
+                    </div>
                   )}
                   {bookingResources && (
                     <>

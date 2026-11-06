@@ -390,6 +390,60 @@ export const createAdminBooking = async (req, res) => {
   }
 };
 
+export const updateAdminBooking = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const { userId, phone } = req.body;
+
+    if (!mongoose.isValidObjectId(bookingId)) {
+      return res.status(400).json({ message: "Booking ID is invalid." });
+    }
+    if (!mongoose.isValidObjectId(userId)) {
+      return res.status(400).json({ message: "Choose a valid customer." });
+    }
+    if (
+      typeof phone !== "string" ||
+      phone.trim().length < 5 ||
+      phone.trim().length > 40
+    ) {
+      return res.status(400).json({
+        message: "Phone must contain between 5 and 40 characters."
+      });
+    }
+
+    const [booking, user] = await Promise.all([
+      Booking.findById(bookingId),
+      User.findOne({ _id: userId, role: "user" }).select("_id")
+    ]);
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found." });
+    }
+    if (!user) {
+      return res.status(404).json({ message: "Selected customer was not found." });
+    }
+
+    booking.user = user._id;
+    booking.phone = phone.trim();
+    await booking.save();
+    await booking.populate([
+      { path: "user", select: "name email phone" },
+      { path: "event", select: "title date time location" },
+      { path: "restaurant", select: "name address" }
+    ]);
+
+    return res.json({
+      message: "Booking customer and contact details updated. Reservation and payment details were not changed.",
+      booking
+    });
+  } catch (error) {
+    return res.status(500).json({
+      message: "Could not update booking.",
+      error: error.message
+    });
+  }
+};
+
 export const submitPayment = async (req, res) => {
   try {
     const { bookingId, transactionReference } = req.body;

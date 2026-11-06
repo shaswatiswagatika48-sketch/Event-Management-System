@@ -3,6 +3,7 @@ import {
   calculateBooking,
   createBookingOrder,
   createAdminBooking,
+  updateAdminBooking,
   submitPayment,
   verifyPayment,
   getMyBookings,
@@ -19,6 +20,7 @@ router.get("/my", protect, getMyBookings);
 
 // Admin routes; controller also checks the admin role.
 router.post("/admin/create", protect, adminOnly, createAdminBooking);
+router.put("/admin/:bookingId", protect, adminOnly, updateAdminBooking);
 router.get("/admin/pending-payments", protect, adminOnly, getPendingPayments);
 router.post("/admin/verify-payment", protect, adminOnly, verifyPayment);
 
