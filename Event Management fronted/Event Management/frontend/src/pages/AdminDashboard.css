@@ -310,6 +310,13 @@
   line-height: 1.4;
 }
 
+.admin-review-feedback {
+  min-width: 240px;
+  max-width: 520px;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
 .admin-actions {
   display: flex;
   align-items: center;

@@ -7,6 +7,7 @@ const sections = [
   ["overview", "Overview"],
   ["events", "Events"],
   ["registrations", "Registrations"],
+  ["feedback", "Ratings & Feedback"],
   ["bookings", "Bookings"],
   ["restaurants", "Restaurants"],
   ["payments", "Payments"],
@@ -485,6 +486,13 @@ export default function AdminDashboard() {
 
   const filteredEvents = searchRows(dashboard?.events || [], search);
   const filteredRegistrations = searchRows(dashboard?.registrations || [], search);
+  const filteredFeedback = searchRows(
+    (dashboard?.registrations || []).filter(
+      (registration) =>
+        registration.rating !== null && registration.rating !== undefined
+    ),
+    search
+  );
   const filteredBookings = searchRows(dashboard?.bookings || [], search);
   const filteredRestaurants = searchRows(dashboard?.restaurants || [], search);
   const filteredPayments = searchRows(dashboard?.payments || [], search);
@@ -547,6 +555,7 @@ export default function AdminDashboard() {
                 overview: "⌂",
                 events: "◇",
                 registrations: "▤",
+                feedback: "★",
                 bookings: "▣",
                 restaurants: "⌖",
                 payments: "₹",
@@ -688,6 +697,57 @@ export default function AdminDashboard() {
               </table>
             </div>
             <p className="admin-dashboard-note">Event registration payment statuses reflect the existing self-reported confirmation flow; they are not bank-verified payment records.</p>
+          </section>
+        )}
+
+        {activeSection === "feedback" && (
+          <section className="admin-panel">
+            <div className="admin-panel-heading">
+              <div>
+                <h2>Ratings &amp; feedback</h2>
+                <p>Responses submitted after event registration.</p>
+              </div>
+            </div>
+            <div className="admin-table-wrap">
+              <table className="admin-table">
+                <thead>
+                  <tr>
+                    <th>User</th>
+                    <th>Event</th>
+                    <th>Rating</th>
+                    <th>Feedback</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {filteredFeedback.map((registration) => (
+                    <tr key={registration._id}>
+                      <td>
+                        <strong>{registration.user?.name || "User unavailable"}</strong>
+                        <small>{registration.user?.email || "—"}</small>
+                      </td>
+                      <td>
+                        <strong>{registration.event?.title || "Event unavailable"}</strong>
+                        <small>{formatDate(registration.createdAt, true)}</small>
+                      </td>
+                      <td>
+                        <span aria-label={`${registration.rating} out of 5 stars`}>
+                          {"★".repeat(registration.rating)}
+                        </span>
+                        <small>{registration.rating} / 5</small>
+                      </td>
+                      <td className="admin-review-feedback">
+                        {registration.ratingFeedback || "No written feedback."}
+                      </td>
+                    </tr>
+                  ))}
+                  {filteredFeedback.length === 0 && (
+                    <tr>
+                      <td colSpan="4">No matching ratings or feedback yet.</td>
+                    </tr>
+                  )}
+                </tbody>
+              </table>
+            </div>
           </section>
         )}
 
