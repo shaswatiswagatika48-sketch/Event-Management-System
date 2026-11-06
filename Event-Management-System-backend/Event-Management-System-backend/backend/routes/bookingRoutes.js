@@ -2,6 +2,7 @@ import express from "express";
 import {
   calculateBooking,
   createBookingOrder,
+  createAdminBooking,
   submitPayment,
   verifyPayment,
   getMyBookings,
@@ -17,6 +18,7 @@ router.post("/submit-payment", protect, submitPayment);
 router.get("/my", protect, getMyBookings);
 
 // Admin routes; controller also checks the admin role.
+router.post("/admin/create", protect, adminOnly, createAdminBooking);
 router.get("/admin/pending-payments", protect, adminOnly, getPendingPayments);
 router.post("/admin/verify-payment", protect, adminOnly, verifyPayment);
 

@@ -57,6 +57,9 @@ export default function AdminDashboard() {
   const [loading, setLoading] = useState(true);
   const [busyAction, setBusyAction] = useState("");
   const [eventDraft, setEventDraft] = useState(null);
+  const [bookingDraft, setBookingDraft] = useState(null);
+  const [bookingResources, setBookingResources] = useState(null);
+  const [loadingBookingResources, setLoadingBookingResources] = useState(false);
   const [restaurantDraft, setRestaurantDraft] = useState(null);
   const [venuePanel, setVenuePanel] = useState(null);
   const [venueData, setVenueData] = useState(null);
@@ -90,6 +93,60 @@ export default function AdminDashboard() {
   useEffect(() => {
     loadDashboard();
   }, [loadDashboard]);
+
+  useEffect(() => {
+    if (!bookingDraft?.eventId || !bookingDraft?.restaurantId) {
+      setBookingResources(null);
+      setLoadingBookingResources(false);
+      return;
+    }
+
+    let active = true;
+    setLoadingBookingResources(true);
+    setBookingResources(null);
+    setError("");
+
+    Promise.all([
+      api.get(
+        `/tables/restaurant/${bookingDraft.restaurantId}/availability`,
+        { params: { eventId: bookingDraft.eventId } }
+      ),
+      api.get(`/food/restaurant/${bookingDraft.restaurantId}`),
+      api.get(`/beverages/restaurant/${bookingDraft.restaurantId}`),
+    ])
+      .then(([availabilityResponse, foodResponse, beverageResponse]) => {
+        if (!active) return;
+        const availability = availabilityResponse.data;
+        setBookingResources({
+          tables: availability.tables || [],
+          sections: availability.sections || [],
+          timeSlots: availability.timeSlots || [],
+          food: foodResponse.data.food || [],
+          beverages: beverageResponse.data.beverages || [],
+        });
+        setBookingDraft((current) => ({
+          ...current,
+          reservationSection:
+            current.reservationSection ||
+            availability.sections?.[0] ||
+            "",
+        }));
+      })
+      .catch((requestError) => {
+        if (!active) return;
+        setError(
+          requestError.response?.data?.message ||
+            "Could not load booking availability and menu options."
+        );
+      })
+      .finally(() => {
+        if (active) setLoadingBookingResources(false);
+      });
+
+    return () => {
+      active = false;
+    };
+  }, [bookingDraft?.eventId, bookingDraft?.restaurantId]);
 
   const openVenuePanel = async (restaurantId, mode) => {
     setVenuePanel({ restaurantId, mode });
@@ -339,6 +396,63 @@ export default function AdminDashboard() {
     }
   };
 
+  const createAdminBooking = async (event) => {
+    event.preventDefault();
+    if (!bookingDraft || !bookingResources) return;
+
+    const tableIds = bookingResources.tables
+      .filter(
+        (table) =>
+          bookingDraft.reservationScope === "restaurant" ||
+          (table.section || "Main Dining Area") ===
+            bookingDraft.reservationSection
+      )
+      .map((table) => table._id);
+    if (!tableIds.length) {
+      setError("The selected restaurant area has no active tables.");
+      return;
+    }
+
+    setBusyAction("booking");
+    setError("");
+    setNotice("");
+    try {
+      const { data } = await api.post("/bookings/admin/create", {
+        userId: bookingDraft.userId,
+        eventId: bookingDraft.eventId,
+        restaurantId: bookingDraft.restaurantId,
+        phone: bookingDraft.phone,
+        tableIds,
+        reservationTime: bookingDraft.reservationTime,
+        reservationScope: bookingDraft.reservationScope,
+        ...(bookingDraft.reservationScope === "section"
+          ? { reservationSection: bookingDraft.reservationSection }
+          : {}),
+        foodItems: Object.entries(bookingDraft.foodQuantities || {}).map(
+          ([itemId, quantity]) => ({ itemId, quantity: Number(quantity) })
+        ),
+        beverageItems: Object.entries(
+          bookingDraft.beverageQuantities || {}
+        ).map(([itemId, quantity]) => ({
+          itemId,
+          quantity: Number(quantity),
+        })),
+      });
+      setBookingDraft(null);
+      setBookingResources(null);
+      setNotice(data.message || "Booking created with no payment recorded.");
+      await loadDashboard();
+    } catch (requestError) {
+      setError(
+        requestError.response?.data?.message ||
+          requestError.response?.data?.error ||
+          "Could not create booking."
+      );
+    } finally {
+      setBusyAction("");
+    }
+  };
+
   const filteredEvents = searchRows(dashboard?.events || [], search);
   const filteredRegistrations = searchRows(dashboard?.registrations || [], search);
   const filteredBookings = searchRows(dashboard?.bookings || [], search);
@@ -549,7 +663,30 @@ export default function AdminDashboard() {
 
         {activeSection === "bookings" && (
           <section className="admin-panel">
-            <div className="admin-panel-heading"><div><h2>Restaurant bookings</h2><p>Actual booking records and their payment progress.</p></div></div>
+            <div className="admin-panel-heading">
+              <div><h2>Restaurant bookings</h2><p>Actual booking records and their payment progress.</p></div>
+              <button
+                type="button"
+                className="admin-primary-btn"
+                onClick={() => {
+                  setError("");
+                  setNotice("");
+                  setBookingDraft({
+                    userId: "",
+                    eventId: "",
+                    restaurantId: "",
+                    phone: "",
+                    reservationScope: "",
+                    reservationSection: "",
+                    reservationTime: "",
+                    foodQuantities: {},
+                    beverageQuantities: {},
+                  });
+                }}
+              >
+                Add booking
+              </button>
+            </div>
             <div className="admin-table-wrap">
               <table className="admin-table">
                 <thead><tr><th>Customer</th><th>Event / Restaurant</th><th>Total</th><th>Paid</th><th>Remaining</th><th>Booking status</th><th>Payment status</th></tr></thead>
@@ -757,6 +894,312 @@ export default function AdminDashboard() {
               <label className="admin-form-full">Description<textarea rows="3" maxLength="2000" value={restaurantDraft.description} onChange={(event) => setRestaurantDraft({ ...restaurantDraft, description: event.target.value })} /></label>
             </div>
             <div className="admin-modal-actions"><button type="button" className="admin-secondary-btn" onClick={() => setRestaurantDraft(null)}>Cancel</button><button className="admin-primary-btn" disabled={busyAction === "restaurant"}>{busyAction === "restaurant" ? "Saving..." : "Save restaurant"}</button></div>
+          </form>
+        </div>
+      )}
+
+      {bookingDraft && (
+        <div className="admin-modal-backdrop" role="presentation">
+          <form className="admin-modal" onSubmit={createAdminBooking}>
+            <div className="admin-modal-heading">
+              <div>
+                <span className="admin-eyebrow">BOOKING MANAGEMENT</span>
+                <h2>Create a real booking</h2>
+              </div>
+              <button
+                type="button"
+                className="admin-modal-close"
+                onClick={() => {
+                  setBookingDraft(null);
+                  setBookingResources(null);
+                }}
+                aria-label="Close"
+              >
+                ×
+              </button>
+            </div>
+            <p className="admin-dashboard-note">
+              The booking will be saved as pending with no payment records.
+              Payment is recorded only after the customer submits a real
+              transaction reference.
+            </p>
+            <div className="admin-form-grid">
+              <label>
+                Customer
+                <select
+                  required
+                  value={bookingDraft.userId}
+                  onChange={(event) => {
+                    const selectedUser = dashboard.users.find(
+                      (user) => user._id === event.target.value
+                    );
+                    setBookingDraft((current) => ({
+                      ...current,
+                      userId: event.target.value,
+                      phone: selectedUser?.phone || current.phone,
+                    }));
+                  }}
+                >
+                  <option value="">Select a customer</option>
+                  {dashboard.users
+                    .filter((user) => user.role !== "admin")
+                    .map((user) => (
+                      <option key={user._id} value={user._id}>
+                        {user.name} — {user.email}
+                      </option>
+                    ))}
+                </select>
+              </label>
+              <label>
+                Event
+                <select
+                  required
+                  value={bookingDraft.eventId}
+                  onChange={(event) =>
+                    setBookingDraft((current) => ({
+                      ...current,
+                      eventId: event.target.value,
+                      reservationTime: "",
+                    }))
+                  }
+                >
+                  <option value="">Select an event</option>
+                  {dashboard.events.map((event) => (
+                    <option key={event._id} value={event._id}>
+                      {event.title} — {formatDate(event.date)}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <label>
+                Restaurant
+                <select
+                  required
+                  value={bookingDraft.restaurantId}
+                  onChange={(event) =>
+                    setBookingDraft((current) => ({
+                      ...current,
+                      restaurantId: event.target.value,
+                      reservationScope: "",
+                      reservationSection: "",
+                      reservationTime: "",
+                      foodQuantities: {},
+                      beverageQuantities: {},
+                    }))
+                  }
+                >
+                  <option value="">Select a restaurant</option>
+                  {dashboard.restaurants
+                    .filter((restaurant) => restaurant.active)
+                    .map((restaurant) => (
+                      <option key={restaurant._id} value={restaurant._id}>
+                        {restaurant.name}
+                      </option>
+                    ))}
+                </select>
+              </label>
+              <label>
+                Customer phone
+                <input
+                  required
+                  minLength="5"
+                  maxLength="40"
+                  value={bookingDraft.phone}
+                  onChange={(event) =>
+                    setBookingDraft((current) => ({
+                      ...current,
+                      phone: event.target.value,
+                    }))
+                  }
+                />
+              </label>
+              {bookingDraft.eventId && bookingDraft.restaurantId && (
+                <>
+                  {loadingBookingResources && (
+                    <p className="admin-form-full" role="status">
+                      Loading restaurant availability...
+                    </p>
+                  )}
+                  {bookingResources && (
+                    <>
+                      <label>
+                        Reservation area
+                        <select
+                          required
+                          value={bookingDraft.reservationScope}
+                          onChange={(event) =>
+                            setBookingDraft((current) => ({
+                              ...current,
+                              reservationScope: event.target.value,
+                              reservationTime: "",
+                            }))
+                          }
+                        >
+                          <option value="">Choose an area</option>
+                          <option value="restaurant">Whole restaurant</option>
+                          <option value="section">One section</option>
+                        </select>
+                      </label>
+                      {bookingDraft.reservationScope === "section" && (
+                        <label>
+                          Section
+                          <select
+                            required
+                            value={bookingDraft.reservationSection}
+                            onChange={(event) =>
+                              setBookingDraft((current) => ({
+                                ...current,
+                                reservationSection: event.target.value,
+                                reservationTime: "",
+                              }))
+                            }
+                          >
+                            {bookingResources.sections.map((section) => (
+                              <option key={section} value={section}>
+                                {section}
+                              </option>
+                            ))}
+                          </select>
+                        </label>
+                      )}
+                      {bookingDraft.reservationScope && (
+                        <label>
+                          Available one-hour slot
+                          <select
+                            required
+                            value={bookingDraft.reservationTime}
+                            onChange={(event) =>
+                              setBookingDraft((current) => ({
+                                ...current,
+                                reservationTime: event.target.value,
+                              }))
+                            }
+                          >
+                            <option value="">Choose a slot</option>
+                            {bookingResources.timeSlots
+                              .filter((slot) =>
+                                bookingDraft.reservationScope === "restaurant"
+                                  ? slot.wholeRestaurantAvailable
+                                  : slot.availableSections.includes(
+                                      bookingDraft.reservationSection
+                                    )
+                              )
+                              .map((slot) => (
+                                <option key={slot.time} value={slot.time}>
+                                  {slot.time}
+                                </option>
+                              ))}
+                          </select>
+                        </label>
+                      )}
+                      {bookingDraft.reservationScope && (
+                        <p className="admin-form-full admin-dashboard-note">
+                          All active tables in the selected area are included
+                          in the booking.
+                        </p>
+                      )}
+                      <div className="admin-form-full admin-booking-menu">
+                        <h3>Optional food and beverages</h3>
+                        {[
+                          ["Food", bookingResources.food, "foodQuantities"],
+                          [
+                            "Beverages",
+                            bookingResources.beverages,
+                            "beverageQuantities",
+                          ],
+                        ].map(([label, items, quantityField]) => (
+                          <div key={quantityField}>
+                            <h4>{label}</h4>
+                            {items.length === 0 ? (
+                              <p className="admin-dashboard-note">
+                                No {label.toLowerCase()} available.
+                              </p>
+                            ) : (
+                              <div className="admin-booking-menu-list">
+                                {items.map((item) => {
+                                  const quantity =
+                                    bookingDraft[quantityField]?.[item._id] || "";
+                                  return (
+                                    <label
+                                      className="admin-booking-menu-item"
+                                      key={item._id}
+                                    >
+                                      <span>
+                                        <input
+                                          type="checkbox"
+                                          checked={Boolean(quantity)}
+                                          onChange={(event) =>
+                                            setBookingDraft((current) => {
+                                              const selections = {
+                                                ...current[quantityField],
+                                              };
+                                              if (event.target.checked) {
+                                                selections[item._id] = 1;
+                                              } else {
+                                                delete selections[item._id];
+                                              }
+                                              return {
+                                                ...current,
+                                                [quantityField]: selections,
+                                              };
+                                            })
+                                          }
+                                        />
+                                        {item.name} — {formatAmount(item.price)}
+                                      </span>
+                                      {quantity && (
+                                        <input
+                                          aria-label={`${item.name} quantity`}
+                                          type="number"
+                                          min="1"
+                                          max="50"
+                                          value={quantity}
+                                          onChange={(event) =>
+                                            setBookingDraft((current) => ({
+                                              ...current,
+                                              [quantityField]: {
+                                                ...current[quantityField],
+                                                [item._id]: event.target.value,
+                                              },
+                                            }))
+                                          }
+                                        />
+                                      )}
+                                    </label>
+                                  );
+                                })}
+                              </div>
+                            )}
+                          </div>
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </>
+              )}
+            </div>
+            <div className="admin-modal-actions">
+              <button
+                type="button"
+                className="admin-secondary-btn"
+                onClick={() => {
+                  setBookingDraft(null);
+                  setBookingResources(null);
+                }}
+              >
+                Cancel
+              </button>
+              <button
+                className="admin-primary-btn"
+                disabled={
+                  busyAction === "booking" ||
+                  loadingBookingResources ||
+                  !bookingResources
+                }
+              >
+                {busyAction === "booking" ? "Creating..." : "Create booking"}
+              </button>
+            </div>
           </form>
         </div>
       )}

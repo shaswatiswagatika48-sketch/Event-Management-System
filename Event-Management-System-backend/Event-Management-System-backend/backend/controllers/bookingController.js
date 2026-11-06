@@ -5,6 +5,7 @@ import Table from "../models/tableModel.js";
 import Food from "../models/foodModel.js";
 import Beverage from "../models/beverageModel.js";
 import Booking from "../models/bookingModel.js";
+import User from "../models/userModel.js";
 import {
   getRestaurantAvailability,
   releaseRestaurantSlot,
@@ -280,6 +281,109 @@ export const createBookingOrder = async (req, res) => {
     });
   } catch (error) {
     res.status(400).json({
+      message: "Could not create booking.",
+      error: error.message
+    });
+  }
+};
+
+export const createAdminBooking = async (req, res) => {
+  try {
+    const { userId, phone, foodItems = [], beverageItems = [] } = req.body;
+
+    if (!mongoose.isValidObjectId(userId)) {
+      return res.status(400).json({ message: "Choose a valid user." });
+    }
+    if (typeof phone !== "string" || phone.trim().length < 5 || phone.trim().length > 40) {
+      return res.status(400).json({
+        message: "Phone must contain between 5 and 40 characters."
+      });
+    }
+    if (!Array.isArray(foodItems) || !Array.isArray(beverageItems)) {
+      return res.status(400).json({
+        message: "Food and beverage selections must be lists."
+      });
+    }
+
+    for (const [label, items] of [["Food", foodItems], ["Beverage", beverageItems]]) {
+      const ids = items.map((item) => String(item?.itemId || ""));
+      if (
+        ids.some((id) => !mongoose.isValidObjectId(id)) ||
+        new Set(ids).size !== ids.length ||
+        items.some(
+          (item) =>
+            !Number.isInteger(Number(item.quantity)) ||
+            Number(item.quantity) < 1 ||
+            Number(item.quantity) > 50
+        )
+      ) {
+        return res.status(400).json({
+          message: `${label} selections must have unique valid items and quantities from 1 to 50.`
+        });
+      }
+    }
+
+    const user = await User.findById(userId).select("_id");
+    if (!user) {
+      return res.status(404).json({ message: "Selected user was not found." });
+    }
+
+    const details = await getBookingDetails(req.body);
+    const bookingId = new mongoose.Types.ObjectId();
+    const reservation = await reserveRestaurantSlot({
+      restaurant: details.restaurant,
+      event: details.event,
+      bookingId,
+      bookingType: "booking",
+      reservationTime: details.reservationTime,
+      reservationScope: details.reservationScope,
+      reservationSection: details.reservationSection
+    });
+
+    let booking;
+    try {
+      booking = await Booking.create({
+        _id: bookingId,
+        user: user._id,
+        event: details.event._id,
+        restaurant: details.restaurant._id,
+        reservationDate: reservation.reservationDate,
+        reservationTime: details.reservationTime,
+        reservationScope: details.reservationScope,
+        reservationSection:
+          details.reservationScope === "section"
+            ? details.reservationSection
+            : "",
+        tables: details.tableSnapshots,
+        foodItems: details.foodNormalized,
+        beverageItems: details.beverageNormalized,
+        phone: phone.trim(),
+        subtotal: details.subtotal,
+        totalAmount: details.subtotal,
+        advanceAmount: Math.ceil(details.subtotal / 2),
+        amountPaid: 0,
+        balanceAmount: details.subtotal,
+        paymentStatus: "pending",
+        bookingStatus: "pending",
+        payments: []
+      });
+    } catch (error) {
+      await releaseRestaurantSlot(bookingId, "booking");
+      throw error;
+    }
+
+    await booking.populate([
+      { path: "user", select: "name email phone" },
+      { path: "event", select: "title date time location" },
+      { path: "restaurant", select: "name address" }
+    ]);
+
+    return res.status(201).json({
+      message: "Booking created. No payment has been recorded.",
+      booking
+    });
+  } catch (error) {
+    return res.status(400).json({
       message: "Could not create booking.",
       error: error.message
     });
