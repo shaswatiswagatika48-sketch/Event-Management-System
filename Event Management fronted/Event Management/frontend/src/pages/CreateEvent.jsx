@@ -365,7 +365,11 @@ export default function CreateEvent() {
           .filter(([, quantity]) => quantity > 0)
           .map(([itemId, quantity]) => ({ itemId, quantity })),
       });
-      navigate("/events", {
+      const destination =
+        JSON.parse(localStorage.getItem("user") || "{}").role === "admin"
+          ? "/admin"
+          : "/events";
+      navigate(destination, {
         replace: true,
         state: {
           message: data.message,

@@ -7,7 +7,7 @@ import {
   getMyBookings,
   getPendingPayments
 } from "../controllers/bookingController.js";
-import { protect } from "../middleware/authMiddleware.js";
+import { protect, adminOnly } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ router.post("/submit-payment", protect, submitPayment);
 router.get("/my", protect, getMyBookings);
 
 // Admin routes; controller also checks the admin role.
-router.get("/admin/pending-payments", protect, getPendingPayments);
-router.post("/admin/verify-payment", protect, verifyPayment);
+router.get("/admin/pending-payments", protect, adminOnly, getPendingPayments);
+router.post("/admin/verify-payment", protect, adminOnly, verifyPayment);
 
 export default router;

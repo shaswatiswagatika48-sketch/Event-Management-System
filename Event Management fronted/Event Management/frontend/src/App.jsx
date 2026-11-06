@@ -1,5 +1,5 @@
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import {
   BrowserRouter,
   Routes,
@@ -7,6 +7,7 @@ import {
   Navigate,
   Link,
   useLocation,
+  useNavigate,
 } from "react-router-dom";
 
 import Login from "./Login";
@@ -21,11 +22,14 @@ import CreateEvent from "./pages/CreateEvent";
 import Rating from "./pages/Rating";
 import FoodImageManager from "./pages/FoodImageManager";
 import RestaurantManager from "./pages/RestaurantManager";
+import AdminDashboard from "./pages/AdminDashboard";
+import api from "./api";
 
 import "./App.css";
 
 function AppContent() {
   const location = useLocation();
+  const navigate = useNavigate();
 
   const [isLoggedIn, setIsLoggedIn] = useState(
     localStorage.getItem("eventhubLoggedIn") === "true"
@@ -37,6 +41,47 @@ function AppContent() {
       return false;
     }
   });
+
+  useEffect(() => {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    let active = true;
+    const refreshUserRole = async () => {
+      try {
+        const { data } = await api.get("/users/me");
+        if (!active) return;
+
+        localStorage.setItem("user", JSON.stringify(data.user));
+        localStorage.setItem("eventhubLoggedIn", "true");
+        setIsLoggedIn(true);
+        setIsAdmin(data.user?.role === "admin");
+
+        if (
+          data.user?.role === "admin" &&
+          ["/", "/login", "/events"].includes(location.pathname)
+        ) {
+          navigate("/admin", { replace: true });
+        }
+      } catch (error) {
+        if (!active) return;
+        if (error.response?.status === 401) {
+          localStorage.removeItem("eventhubLoggedIn");
+          localStorage.removeItem("token");
+          localStorage.removeItem("user");
+          setIsLoggedIn(false);
+          setIsAdmin(false);
+        } else {
+          console.error("Could not refresh the signed-in user's role:", error);
+        }
+      }
+    };
+
+    refreshUserRole();
+    return () => {
+      active = false;
+    };
+  }, [navigate]);
 
   const handleLogin = (user) => {
     localStorage.setItem("eventhubLoggedIn", "true");
@@ -83,7 +128,11 @@ function AppContent() {
 
             {isLoggedIn ? (
               <>
-                <Link to="/create-event">Create Event</Link>
+                {isAdmin ? (
+                  <Link to="/admin">Admin Dashboard</Link>
+                ) : (
+                  <Link to="/create-event">Create Event</Link>
+                )}
                 <button
                   type="button"
                   className="logout-btn"
@@ -100,13 +149,16 @@ function AppContent() {
       )}
 
       <Routes>
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={isAdmin ? <Navigate to="/admin" replace /> : <Home />}
+        />
 
         <Route
           path="/login"
           element={
             isLoggedIn ? (
-              <Navigate to="/events" replace />
+              <Navigate to={isAdmin ? "/admin" : "/events"} replace />
             ) : (
               <Login onLogin={handleLogin} />
             )
@@ -128,6 +180,13 @@ function AppContent() {
           path="/events"
           element={
             isLoggedIn ? <Event /> : <Navigate to="/login" replace />
+          }
+        />
+
+        <Route
+          path="/admin"
+          element={
+            isAdmin ? <AdminDashboard /> : <Navigate to="/events" replace />
           }
         />
 

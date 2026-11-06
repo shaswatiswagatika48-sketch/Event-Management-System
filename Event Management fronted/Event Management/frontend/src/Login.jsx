@@ -41,7 +41,7 @@ export default function Login({ onLogin }) {
       }
 
       // Go to Explore Events
-      navigate("/events");
+      navigate(data.user?.role === "admin" ? "/admin" : "/events");
     } catch (error) {
       setMessage(
         error.response?.data?.message ||

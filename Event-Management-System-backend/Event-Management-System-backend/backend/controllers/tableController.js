@@ -164,8 +164,23 @@ export const createTable = async (req, res) => {
 
 export const deleteTable = async (req, res) => {
   try {
-    const table = await Table.findByIdAndDelete(req.params.id);
+    const table = await Table.findById(req.params.id);
     if (!table) return res.status(404).json({ message: "Table not found." });
+
+    const [registered, booked] = await Promise.all([
+      Registration.exists({ "tables.table": table._id }),
+      Booking.exists({
+        "tables.table": table._id,
+        bookingStatus: { $in: ["pending", "confirmed"] }
+      })
+    ]);
+    if (registered || booked) {
+      return res.status(409).json({
+        message: "This table is attached to an existing registration or active booking and cannot be deleted."
+      });
+    }
+
+    await table.deleteOne();
     res.json({ message: "Table deleted successfully." });
   } catch (error) {
     res.status(500).json({ message: "Could not delete table.", error: error.message });
