@@ -1,12 +1,15 @@
 import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import api from "../api";
+import { shareEvent } from "../utils/shareEvent";
 import "./Rating.css";
 
 export default function Rating() {
   const location = useLocation();
   const { registrationId } = useParams();
   const [eventTitle, setEventTitle] = useState("");
+  const [eventId, setEventId] = useState(location.state?.eventId || "");
+  const [shareMessage, setShareMessage] = useState("");
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
   const [loading, setLoading] = useState(true);
@@ -28,6 +31,12 @@ export default function Rating() {
         }
 
         setEventTitle(registration.event?.title || "your event");
+        setEventId(
+          registration.event?._id ||
+            registration.event ||
+            location.state?.eventId ||
+            ""
+        );
         if (registration.rating) {
           setRating(registration.rating);
           setFeedback(registration.ratingFeedback || "");
@@ -45,6 +54,17 @@ export default function Rating() {
 
     loadRegistration();
   }, [registrationId]);
+
+  const handleShareEvent = async () => {
+    if (!eventId) return;
+    const result = await shareEvent({
+      _id: eventId,
+      title: eventTitle,
+    });
+    if (result === "shared") setShareMessage("Event shared.");
+    if (result === "copied") setShareMessage("Event link copied.");
+    if (result === "prompted") setShareMessage("Copy the event link to share it.");
+  };
 
   const submitRating = async (event) => {
     event.preventDefault();
@@ -81,6 +101,22 @@ export default function Rating() {
           <>
             <h1>Thank you for your feedback!</h1>
             <p>Your rating for {eventTitle} has been saved.</p>
+            {eventId && (
+              <>
+                <button
+                  type="button"
+                  className="rating-share"
+                  onClick={handleShareEvent}
+                >
+                  Share this event
+                </button>
+                {shareMessage && (
+                  <p className="rating-share-message" role="status">
+                    {shareMessage}
+                  </p>
+                )}
+              </>
+            )}
             <Link to="/events" className="rating-submit">
               Browse Events
             </Link>

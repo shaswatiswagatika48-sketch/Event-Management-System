@@ -57,9 +57,13 @@ function AppContent() {
         setIsLoggedIn(true);
         setIsAdmin(data.user?.role === "admin");
 
+        const sharedEventLink =
+          location.pathname === "/events" &&
+          new URLSearchParams(location.search).has("eventId");
         if (
           data.user?.role === "admin" &&
-          ["/", "/login", "/events"].includes(location.pathname)
+          (["/", "/login"].includes(location.pathname) ||
+            (location.pathname === "/events" && !sharedEventLink))
         ) {
           navigate("/admin", { replace: true });
         }
@@ -81,7 +85,7 @@ function AppContent() {
     return () => {
       active = false;
     };
-  }, [navigate]);
+  }, [location.pathname, location.search, navigate]);
 
   const handleLogin = (user) => {
     localStorage.setItem("eventhubLoggedIn", "true");
@@ -178,9 +182,7 @@ function AppContent() {
 
         <Route
           path="/events"
-          element={
-            isLoggedIn ? <Event /> : <Navigate to="/login" replace />
-          }
+          element={<Event />}
         />
 
         <Route

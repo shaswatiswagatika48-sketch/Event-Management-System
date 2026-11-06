@@ -348,6 +348,7 @@ function Booking() {
       navigate(`/rating/${data.registration._id}`, {
         state: {
           eventTitle: selectedEvent.title,
+          eventId: selectedEvent._id,
           seatNumbers: data.registration.seatNumbers || [data.registration.seatNumber],
           emailSent: data.emailSent,
         },

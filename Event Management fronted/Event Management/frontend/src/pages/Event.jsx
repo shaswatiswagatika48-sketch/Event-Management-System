@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation, useSearchParams } from "react-router-dom";
 import api from "../api";
+import { shareEvent } from "../utils/shareEvent";
 import "./Event.css";
 
 const formatDate = (date) =>
@@ -12,11 +13,19 @@ const formatDate = (date) =>
 
 function Event() {
   const location = useLocation();
+  const [searchParams, setSearchParams] = useSearchParams();
   const [events, setEvents] = useState([]);
-  const [selectedEventId, setSelectedEventId] = useState("");
+  const [selectedEventId, setSelectedEventId] = useState(
+    searchParams.get("eventId") || ""
+  );
+  const [shareMessage, setShareMessage] = useState("");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const selectedEvent = events.find((event) => event._id === selectedEventId);
+
+  useEffect(() => {
+    setSelectedEventId(searchParams.get("eventId") || "");
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchEvents = async () => {
@@ -36,6 +45,32 @@ function Event() {
     fetchEvents();
   }, []);
 
+  const handleShare = async (event) => {
+    setShareMessage("");
+    const result = await shareEvent(event);
+    if (result === "shared") setShareMessage("Event shared.");
+    if (result === "copied") setShareMessage("Event link copied.");
+    if (result === "prompted") setShareMessage("Copy the event link to share it.");
+  };
+
+  const showEventDetails = (eventId) => {
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current);
+      next.set("eventId", eventId);
+      return next;
+    });
+    setShareMessage("");
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
+  const clearSelectedEvent = () => {
+    setSearchParams((current) => {
+      const next = new URLSearchParams(current);
+      next.delete("eventId");
+      return next;
+    });
+  };
+
   return (
     <div className="events-page">
       <div className="events-header">
@@ -50,7 +85,7 @@ function Event() {
             <button
               type="button"
               className="event-detail-back"
-              onClick={() => setSelectedEventId("")}
+              onClick={clearSelectedEvent}
             >
               ← All events
             </button>
@@ -58,6 +93,13 @@ function Event() {
             <div className="event-detail-overview">
               <p className="event-detail-eyebrow">EVENT DETAILS</p>
               <h2 id="event-detail-title">{selectedEvent.title}</h2>
+              <button
+                type="button"
+                className="event-share-btn"
+                onClick={() => handleShare(selectedEvent)}
+              >
+                Share event
+              </button>
               <p className="event-description">{selectedEvent.description}</p>
               <div className="event-details">
                 <p>📍 <strong>Location:</strong> {selectedEvent.location}</p>
@@ -229,12 +271,16 @@ function Event() {
                   <button
                     type="button"
                     className="event-details-btn"
-                    onClick={() => {
-                      setSelectedEventId(event._id);
-                      window.scrollTo({ top: 0, behavior: "smooth" });
-                    }}
+                    onClick={() => showEventDetails(event._id)}
                   >
                     View details
+                  </button>
+                  <button
+                    type="button"
+                    className="event-share-btn"
+                    onClick={() => handleShare(event)}
+                  >
+                    Share event
                   </button>
                   <Link
                     to="/booking"
@@ -251,6 +297,11 @@ function Event() {
               </article>
             ))}
           </div>
+        )}
+        {shareMessage && (
+          <p className="events-message events-share-message" role="status">
+            {shareMessage}
+          </p>
         )}
       </div>
     </div>

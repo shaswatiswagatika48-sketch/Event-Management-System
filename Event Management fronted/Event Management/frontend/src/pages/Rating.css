@@ -113,6 +113,27 @@
   cursor: not-allowed;
 }
 
+.rating-share {
+  display: inline-flex;
+  justify-content: center;
+  width: 100%;
+  margin-top: 14px;
+  padding: 13px 18px;
+  border: 1px solid #dcd8ff;
+  border-radius: 8px;
+  background: #f5f3ff;
+  color: #5146d8;
+  cursor: pointer;
+  font: inherit;
+  font-weight: 700;
+}
+
+.rating-share-message {
+  margin-top: 8px;
+  color: #16803d !important;
+  text-align: center;
+}
+
 .rating-error {
   margin-top: 12px;
   color: #b42318;
