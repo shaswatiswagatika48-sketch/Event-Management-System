@@ -98,11 +98,57 @@ const defaultFoodImages = {
   },
 };
 
+const foodImageKeywords = [
+  [["pizza"], defaultFoodImages["margherita pizza"]],
+  [["biryani", "pulao"], defaultFoodImages["veg biryani"]],
+  [["paneer tikka", "tikka", "kebab", "kabab"], defaultFoodImages["paneer tikka"]],
+  [["paneer", "masala", "curry"], defaultFoodImages["paneer butter masala"]],
+  [["pasta", "macaroni", "spaghetti"], defaultFoodImages["creamy alfredo pasta"]],
+  [["sandwich", "wrap", "roll"], defaultFoodImages["loaded veg sandwich"]],
+  [["burger"], defaultFoodImages["veg burger"]],
+  [["noodle", "chow mein"], defaultFoodImages["veg noodles"]],
+  [["fries", "french fry", "potato"], defaultFoodImages["french fries"]],
+  [["dosa"], defaultFoodImages["masala dosa"]],
+  [["naan", "roti", "paratha", "flatbread"], defaultFoodImages["butter naan"]],
+  [["brownie", "cake", "chocolate"], defaultFoodImages["chocolate brownie"]],
+  [["gulab jamun", "dessert", "sweet"], defaultFoodImages["gulab jamun"]],
+];
+
+const foodImageCategories = {
+  starter: defaultFoodImages["paneer tikka"],
+  appetizer: defaultFoodImages["paneer tikka"],
+  snack: defaultFoodImages["french fries"],
+  "main course": defaultFoodImages["veg biryani"],
+  dessert: defaultFoodImages["gulab jamun"],
+  sweet: defaultFoodImages["gulab jamun"],
+};
+
+const getDefaultFoodPhoto = (item) => {
+  const name = item?.name?.trim().toLowerCase() || "";
+  const namedPhoto = defaultFoodImages[name];
+  if (namedPhoto) return namedPhoto;
+
+  const keywordPhoto = foodImageKeywords.find(([keywords]) =>
+    keywords.some((keyword) => name.includes(keyword))
+  )?.[1];
+  if (keywordPhoto) return keywordPhoto;
+
+  const category = item?.category?.trim().toLowerCase() || "";
+  if (category.includes("beverage") || category.includes("drink")) {
+    return { src: "" };
+  }
+
+  const categoryPhoto = Object.entries(foodImageCategories).find(([key]) =>
+    category.includes(key)
+  )?.[1];
+
+  return categoryPhoto || defaultFoodImages["paneer tikka"];
+};
+
 export const getFoodPhoto = (item) => {
-  const fallback = defaultFoodImages[item?.name?.trim().toLowerCase()];
   if (item?.image) {
     return { src: item.image };
   }
 
-  return fallback || { src: "" };
+  return getDefaultFoodPhoto(item);
 };
