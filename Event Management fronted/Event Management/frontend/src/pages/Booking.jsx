@@ -894,7 +894,7 @@ function Booking() {
                 )}
               </>
             )}
-            {selectedEvent?.restaurant && foodTotal + beverageTotal > 0 && (
+            {selectedRestaurantId && foodTotal + beverageTotal > 0 && (
               <section className="booking-additional-food-payment" aria-label="Additional food payment">
                 <h3>Pay for your additional food</h3>
                 <p>
