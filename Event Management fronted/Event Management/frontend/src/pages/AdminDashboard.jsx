@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../api";
+import { getEventStatus } from "../utils/eventStatus";
 import "./AdminDashboard.css";
 
 const sections = [
@@ -614,17 +615,22 @@ export default function AdminDashboard() {
               </div>
               <div className="admin-table-wrap">
                 <table className="admin-table">
-                  <thead><tr><th>Event</th><th>Date</th><th>Seats</th><th>Registrations</th></tr></thead>
+                  <thead><tr><th>Event</th><th>Date</th><th>Status</th><th>Seats</th><th>Registrations</th></tr></thead>
                   <tbody>
                     {dashboard.events.slice(0, 5).map((event) => (
                       <tr key={event._id}>
                         <td><strong>{event.title}</strong><small>{event.location}</small></td>
                         <td>{formatDate(event.date)}</td>
+                        <td>
+                          <span className={`admin-status status-${getEventStatus(event.date).completed ? "completed" : "pending"}`}>
+                            {getEventStatus(event.date).label}
+                          </span>
+                        </td>
                         <td>{event.availableSeats} / {event.totalSeats}</td>
                         <td>{event.registrationCount}</td>
                       </tr>
                     ))}
-                    {dashboard.events.length === 0 && <tr><td colSpan="4">No events found.</td></tr>}
+                    {dashboard.events.length === 0 && <tr><td colSpan="5">No events found.</td></tr>}
                   </tbody>
                 </table>
               </div>
@@ -642,12 +648,17 @@ export default function AdminDashboard() {
             </div>
             <div className="admin-table-wrap">
               <table className="admin-table">
-                <thead><tr><th>Event</th><th>Date</th><th>Ticket</th><th>Seats available</th><th>Registrations</th><th>Actions</th></tr></thead>
+                <thead><tr><th>Event</th><th>Date</th><th>Status</th><th>Ticket</th><th>Seats available</th><th>Registrations</th><th>Actions</th></tr></thead>
                 <tbody>
                   {filteredEvents.map((event) => (
                     <tr key={event._id}>
                       <td><strong>{event.title}</strong><small>{event.location}</small></td>
                       <td>{formatDate(event.date)}</td>
+                      <td>
+                        <span className={`admin-status status-${getEventStatus(event.date).completed ? "completed" : "pending"}`}>
+                          {getEventStatus(event.date).label}
+                        </span>
+                      </td>
                       <td>{formatAmount(event.ticketPrice)}</td>
                       <td>{event.availableSeats} / {event.totalSeats}</td>
                       <td>{event.registrationCount}</td>
@@ -668,7 +679,7 @@ export default function AdminDashboard() {
                       </td>
                     </tr>
                   ))}
-                  {filteredEvents.length === 0 && <tr><td colSpan="6">No matching events.</td></tr>}
+                  {filteredEvents.length === 0 && <tr><td colSpan="7">No matching events.</td></tr>}
                 </tbody>
               </table>
             </div>
@@ -680,7 +691,7 @@ export default function AdminDashboard() {
             <div className="admin-panel-heading"><div><h2>Event registrations</h2><p>User and event details with reported payment status.</p></div></div>
             <div className="admin-table-wrap">
               <table className="admin-table">
-                <thead><tr><th>User</th><th>Event</th><th>Seats</th><th>Registration status</th><th>Payment report</th><th>Created</th></tr></thead>
+                <thead><tr><th>User</th><th>Event</th><th>Seats</th><th>Registration status</th><th>Event status</th><th>Payment report</th><th>Created</th></tr></thead>
                 <tbody>
                   {filteredRegistrations.map((registration) => (
                     <tr key={registration._id}>
@@ -688,11 +699,16 @@ export default function AdminDashboard() {
                       <td><strong>{registration.event?.title || "Event unavailable"}</strong><small>{registration.event?.location || ""}</small></td>
                       <td>{(registration.seatNumbers || [registration.seatNumber]).filter(Boolean).join(", ") || "—"}</td>
                       <td><span className="admin-status status-confirmed">Registered</span></td>
+                      <td>
+                        <span className={`admin-status status-${getEventStatus(registration.event?.date).completed ? "completed" : "pending"}`}>
+                          {getEventStatus(registration.event?.date).label}
+                        </span>
+                      </td>
                       <td><span className={`admin-status status-${registration.paymentStatus || "unknown"}`}>{registration.paymentStatus || "unknown"}</span><small>{formatAmount(registration.amountPaidReported)}</small></td>
                       <td>{formatDate(registration.createdAt, true)}</td>
                     </tr>
                   ))}
-                  {filteredRegistrations.length === 0 && <tr><td colSpan="6">No matching registrations.</td></tr>}
+                  {filteredRegistrations.length === 0 && <tr><td colSpan="7">No matching registrations.</td></tr>}
                 </tbody>
               </table>
             </div>

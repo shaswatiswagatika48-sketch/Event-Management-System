@@ -76,6 +76,23 @@
   font-size: 28px;
 }
 
+.event-completion-status {
+  display: inline-flex;
+  align-items: center;
+  margin: 0 0 12px;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #fff5df;
+  color: #9a6200;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.event-completion-status.completed {
+  background: #e8f7ef;
+  color: #18794e;
+}
+
 .event-detail-booking {
   display: grid;
   gap: 16px;
@@ -179,6 +196,11 @@
   color: #22223a;
   font-size: 21px;
   line-height: 1.25;
+}
+
+.events-page .event-card .event-completion-status {
+  align-self: flex-start;
+  margin: -8px 0 12px;
 }
 
 .events-page .event-icon {

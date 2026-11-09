@@ -35,6 +35,25 @@
   line-height: 1.6;
 }
 
+.rating-card > .rating-event-status {
+  margin-top: 12px;
+}
+
+.rating-event-status span {
+  display: inline-block;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #fff5df;
+  color: #9a6200;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.rating-event-status span.completed {
+  background: #e8f7ef;
+  color: #18794e;
+}
+
 .rating-card > .rating-email-status {
   margin-top: 12px;
   color: #5146d8;

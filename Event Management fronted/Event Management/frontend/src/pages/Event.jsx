@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useSearchParams } from "react-router-dom";
 import api from "../api";
 import { shareEvent } from "../utils/shareEvent";
+import { getEventStatus } from "../utils/eventStatus";
 import "./Event.css";
 
 const formatDate = (date) =>
@@ -22,6 +23,9 @@ function Event() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const selectedEvent = events.find((event) => event._id === selectedEventId);
+  const selectedEventStatus = selectedEvent
+    ? getEventStatus(selectedEvent.date)
+    : null;
 
   useEffect(() => {
     setSelectedEventId(searchParams.get("eventId") || "");
@@ -93,6 +97,11 @@ function Event() {
             <div className="event-detail-overview">
               <p className="event-detail-eyebrow">EVENT DETAILS</p>
               <h2 id="event-detail-title">{selectedEvent.title}</h2>
+              <span
+                className={`event-completion-status ${selectedEventStatus.completed ? "completed" : ""}`}
+              >
+                {selectedEventStatus.label}
+              </span>
               <button
                 type="button"
                 className="event-share-btn"
@@ -240,13 +249,20 @@ function Event() {
 
         {!loading && !error && events.length > 0 && (
           <div className="events-grid">
-            {events.map((event) => (
+            {events.map((event) => {
+              const status = getEventStatus(event.date);
+              return (
               <article className="event-card" key={event._id}>
                 <div className="event-icon" aria-hidden="true">
                   🎟️
                 </div>
 
                 <h2>{event.title}</h2>
+                <span
+                  className={`event-completion-status ${status.completed ? "completed" : ""}`}
+                >
+                  {status.label}
+                </span>
                 <p className="event-description">{event.description}</p>
 
                 <div className="event-details">
@@ -295,7 +311,8 @@ function Event() {
                   </Link>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </div>
         )}
         {shareMessage && (

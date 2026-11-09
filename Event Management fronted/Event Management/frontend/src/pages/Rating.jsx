@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Link, useLocation, useParams } from "react-router-dom";
 import api from "../api";
 import { shareEvent } from "../utils/shareEvent";
+import { getEventStatus } from "../utils/eventStatus";
 import "./Rating.css";
 
 export default function Rating() {
@@ -9,6 +10,7 @@ export default function Rating() {
   const { registrationId } = useParams();
   const [eventTitle, setEventTitle] = useState("");
   const [eventId, setEventId] = useState(location.state?.eventId || "");
+  const [eventDate, setEventDate] = useState(null);
   const [shareMessage, setShareMessage] = useState("");
   const [rating, setRating] = useState(0);
   const [feedback, setFeedback] = useState("");
@@ -16,6 +18,7 @@ export default function Rating() {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState("");
   const [submitted, setSubmitted] = useState(false);
+  const eventStatus = getEventStatus(eventDate);
 
   useEffect(() => {
     const loadRegistration = async () => {
@@ -31,6 +34,7 @@ export default function Rating() {
         }
 
         setEventTitle(registration.event?.title || "your event");
+        setEventDate(registration.event?.date || null);
         setEventId(
           registration.event?._id ||
             registration.event ||
@@ -101,6 +105,12 @@ export default function Rating() {
           <>
             <h1>Thank you for your feedback!</h1>
             <p>Your rating for {eventTitle} has been saved.</p>
+            <p className="rating-event-status">
+              Event status:{" "}
+              <span className={eventStatus.completed ? "completed" : ""}>
+                {eventStatus.label}
+              </span>
+            </p>
             {eventId && (
               <>
                 <button
@@ -135,6 +145,14 @@ export default function Rating() {
             <p>
               Share your experience registering for <strong>{eventTitle}</strong>.
             </p>
+            {eventDate && (
+              <p className="rating-event-status">
+                Event status:{" "}
+                <span className={eventStatus.completed ? "completed" : ""}>
+                  {eventStatus.label}
+                </span>
+              </p>
+            )}
             {(location.state?.seatNumbers?.length > 0 || location.state?.seatNumber) && (
               <p>
                 Your selected seats:{" "}
