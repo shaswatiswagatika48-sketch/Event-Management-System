@@ -805,7 +805,7 @@ function Booking() {
                         <FoodImage
                           item={item}
                           className="booking-food-thumbnail"
-                          creditPlacement="inline"
+                          showCredit={false}
                         />
                         <strong>{item.name}</strong>
                         <span>
@@ -857,6 +857,12 @@ function Booking() {
                       return (
                         <div className="booking-menu-item" key={item._id}>
                           <div>
+                            <FoodImage
+                              item={item}
+                              className="booking-food-thumbnail"
+                              kind="beverage"
+                              showCredit={false}
+                            />
                             <strong>{item.name}</strong>
                             <span>
                               ₹{Number(item.price).toLocaleString("en-IN")}

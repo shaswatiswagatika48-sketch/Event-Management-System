@@ -14,6 +14,9 @@ import vegBiryani from "../assets/food/veg-biryani.jpg";
 import vegBurger from "../assets/food/veg-burger.jpg";
 import vegNoodles from "../assets/food/veg-noodles.jpg";
 import whiteSaucePasta from "../assets/food/white-sauce-pasta.jpg";
+import freshLimeSoda from "../assets/beverages/fresh-lime-soda.svg";
+import mangoShake from "../assets/beverages/mango-shake.svg";
+import refreshingDrink from "../assets/beverages/refreshing-drink.svg";
 
 const defaultFoodImages = {
   "chocolate brownie": {
@@ -151,4 +154,20 @@ export const getFoodPhoto = (item) => {
   }
 
   return getDefaultFoodPhoto(item);
+};
+
+export const getBeveragePhoto = (item) => {
+  if (item?.image) {
+    return { src: item.image };
+  }
+
+  const name = item?.name?.trim().toLowerCase() || "";
+  if (name.includes("lime") || name.includes("lemon") || name.includes("soda")) {
+    return { src: freshLimeSoda };
+  }
+  if (name.includes("mango") || name.includes("shake") || name.includes("smoothie")) {
+    return { src: mangoShake };
+  }
+
+  return { src: refreshingDrink };
 };

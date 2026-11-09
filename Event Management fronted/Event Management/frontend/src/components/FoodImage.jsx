@@ -1,11 +1,18 @@
 import { useEffect, useState } from "react";
 import { getAssetUrl } from "../api";
-import { getFoodPhoto } from "../Data/foodImages";
+import { getBeveragePhoto, getFoodPhoto } from "../Data/foodImages";
 
-export default function FoodImage({ item, className, creditPlacement = "overlay" }) {
-  const photo = getFoodPhoto(item);
+export default function FoodImage({
+  item,
+  className,
+  creditPlacement = "overlay",
+  showCredit = true,
+  kind = "food",
+}) {
+  const getPhoto = kind === "beverage" ? getBeveragePhoto : getFoodPhoto;
+  const photo = getPhoto(item);
   const fallbackPhoto = item?.image
-    ? getFoodPhoto({ ...item, image: "" })
+    ? getPhoto({ ...item, image: "" })
     : null;
   const [usingFallback, setUsingFallback] = useState(false);
   const [imageFailed, setImageFailed] = useState(false);
@@ -17,7 +24,7 @@ export default function FoodImage({ item, className, creditPlacement = "overlay"
   useEffect(() => {
     setUsingFallback(false);
     setImageFailed(false);
-  }, [photo.src]);
+  }, [kind, photo.src]);
 
   return (
     <div className={className}>
@@ -41,7 +48,7 @@ export default function FoodImage({ item, className, creditPlacement = "overlay"
       ) : (
         <span aria-hidden="true">🍽️</span>
       )}
-      {visiblePhoto?.credit && (
+      {showCredit && visiblePhoto?.credit && (
         <div
           className={`food-image-credit ${
             creditPlacement === "inline" ? "food-image-credit-inline" : ""

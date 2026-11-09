@@ -388,21 +388,6 @@ background: linear-gradient(135deg, #f0eeff, #e5e1ff);
 object-fit: cover;
 }
 
-.booking-food-thumbnail .food-image-credit-inline {
-position: static;
-display: flex;
-flex-wrap: wrap;
-justify-content: flex-start;
-gap: 4px;
-padding: 0;
-background: transparent;
-font-size: 9px;
-}
-
-.booking-food-thumbnail .food-image-credit-inline a {
-color: #6d6d7d;
-}
-
 .booking-menu-item strong {
 color: #333;
 font-size: 14px;
