@@ -1030,9 +1030,7 @@ function Booking() {
                     alt="PhonePe payment QR code"
                   />
                   <p className="payment-verification-note">
-                    This static QR does not notify EventHub when payment is
-                    complete. Registration will proceed when you confirm
-                    payment below.
+                    Registration will proceed when you confirm payment below.
                   </p>
                   <label className="payment-confirmation">
                     <input
