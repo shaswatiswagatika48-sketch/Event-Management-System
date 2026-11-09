@@ -9,7 +9,7 @@ const api = axios.create({
 
 export const getAssetUrl = (image) => {
   if (!image) return "";
-  if (image.startsWith("/food/")) return image;
+  if (image.startsWith("/food/") || image.startsWith("/assets/")) return image;
   try {
     return new URL(image, API_BASE_URL).href;
   } catch {
