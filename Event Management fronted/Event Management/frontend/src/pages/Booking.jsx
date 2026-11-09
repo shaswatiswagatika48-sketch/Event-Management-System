@@ -70,6 +70,7 @@ function Booking() {
   const [loadingEvents, setLoadingEvents] = useState(true);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [registrationError, setRegistrationError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
 
   const selectedEvent = events.find(
@@ -324,6 +325,7 @@ function Booking() {
     }
 
     setLoading(true);
+    setRegistrationError("");
     setError("");
     setSuccessMessage("");
 
@@ -354,9 +356,11 @@ function Booking() {
         },
       });
     } catch (requestError) {
-      setError(
+      setRegistrationError(
         requestError.response?.data?.message ||
-          "Could not complete your registration. Please try again."
+          (requestError.code === "ERR_NETWORK"
+            ? `Cannot reach the backend at ${api.defaults.baseURL}. Check your connection and try again.`
+            : "Could not complete your registration. Please try again.")
       );
     } finally {
       setLoading(false);
@@ -1060,6 +1064,11 @@ function Booking() {
               >
                 {loading ? "Registering..." : "Complete Registration"}
               </button>
+              {registrationError && (
+                <p className="otp-error" role="alert">
+                  {registrationError}
+                </p>
+              )}
             </div>
           )}
 

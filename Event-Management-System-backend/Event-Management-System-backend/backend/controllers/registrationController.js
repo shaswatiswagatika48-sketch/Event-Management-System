@@ -424,6 +424,15 @@ export const registerForEvent = async (req, res) => {
           message: "One or more selected seats were just taken. Please choose available seats."
         });
       }
+      if (
+        error.code === 11000 &&
+        error.keyPattern?.user &&
+        error.keyPattern?.event
+      ) {
+        return res.status(409).json({
+          message: "You are already registered for this event."
+        });
+      }
       throw error;
     }
 
