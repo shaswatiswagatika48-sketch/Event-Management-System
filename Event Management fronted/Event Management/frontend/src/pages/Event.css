@@ -246,6 +246,11 @@
   color: #333;
 }
 
+.event-details .event-completion-status {
+  margin: 0;
+  vertical-align: middle;
+}
+
 .event-rules {
   margin-top: 14px;
   padding-top: 12px;

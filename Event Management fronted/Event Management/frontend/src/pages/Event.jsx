@@ -97,11 +97,6 @@ function Event() {
             <div className="event-detail-overview">
               <p className="event-detail-eyebrow">EVENT DETAILS</p>
               <h2 id="event-detail-title">{selectedEvent.title}</h2>
-              <span
-                className={`event-completion-status ${selectedEventStatus.completed ? "completed" : ""}`}
-              >
-                {selectedEventStatus.label}
-              </span>
               <button
                 type="button"
                 className="event-share-btn"
@@ -113,6 +108,14 @@ function Event() {
               <div className="event-details">
                 <p>📍 <strong>Location:</strong> {selectedEvent.location}</p>
                 <p>📅 <strong>Date:</strong> {formatDate(selectedEvent.date)}</p>
+                <p>
+                  <strong>Event status:</strong>{" "}
+                  <span
+                    className={`event-completion-status ${selectedEventStatus.completed ? "completed" : ""}`}
+                  >
+                    {selectedEventStatus.label}
+                  </span>
+                </p>
                 <p>🕒 <strong>Time:</strong> {selectedEvent.time}</p>
                 <p>
                   💳 <strong>Ticket price:</strong>{" "}
